@@ -1,8 +1,7 @@
 package com.potato.zhbj.activity;
 
-import android.media.Image;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -18,8 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.potato.zhbj.R;
+import com.potato.zhbj.utils.PrefUtil;
 
 import java.util.ArrayList;
+
+import static com.potato.zhbj.activity.SplashActivity.IS_FIRST_ENTER;
 
 /**
  * Created by li.zhirong on 2018/9/11/011 13:57
@@ -87,6 +89,15 @@ public class GuideActivity extends AppCompatActivity {
                 iv_point_red.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 pointDis = ll_container.getChildAt(1).getLeft() - ll_container.getChildAt(0).getLeft();
                 Log.e("dis", "setLayoutContent完成时，监听Layout(位置确定)后，距离 = " + pointDis);
+            }
+        });
+        btn_guide_enter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //更新sp
+                PrefUtil.setBoolean(getApplicationContext(),IS_FIRST_ENTER, false);
+                startActivity(new Intent(GuideActivity.this,MainActivity.class));
+                finish();
             }
         });
     }

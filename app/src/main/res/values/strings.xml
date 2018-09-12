@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">智慧北京</string>
     <string name="app_btn_guide">开始体验</string>
+
+    <string name="tab_home">首页</string>
+    <string name="tab_news">新闻中心</string>
+    <string name="tab_service">智慧服务</string>
+    <string name="tab_govaffiar">政务中心</string>
+    <string name="tab_setting">设置</string>
 </resources>

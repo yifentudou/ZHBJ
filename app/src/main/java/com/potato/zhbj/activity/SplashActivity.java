@@ -14,7 +14,7 @@ import com.potato.zhbj.R;
 import com.potato.zhbj.utils.PrefUtil;
 
 public class SplashActivity extends AppCompatActivity {
-
+public static final String  IS_FIRST_ENTER ="is_first_enter";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +47,7 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                boolean isFirst = PrefUtil.getBoolean(SplashActivity.this, "is_first_enter", true);
+                boolean isFirst = PrefUtil.getBoolean(SplashActivity.this, IS_FIRST_ENTER, true);
                 Intent intent;
                 if (isFirst) {
                     intent = new Intent(getApplicationContext(), GuideActivity.class);

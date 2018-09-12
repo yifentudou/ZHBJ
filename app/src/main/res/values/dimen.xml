@@ -1,0 +1,7 @@
+<resources>
+
+    <dimen name="shadow_left_menu_width">150dp</dimen>
+    <dimen name="slidingmenu_offset">150dp</dimen>
+    <dimen name="txt_title">22sp</dimen>
+
+</resources>
