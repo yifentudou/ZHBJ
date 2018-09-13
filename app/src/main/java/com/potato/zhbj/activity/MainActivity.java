@@ -18,6 +18,7 @@ import com.potato.zhbj.fragment.LeftMenuFragment;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG_LEFT_MENU = "left_menu_fragment";
     public static final String TAG_CONTENT = "content_fragment";
+    public SlidingMenu menu;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSlidingMenu() {
-        SlidingMenu menu = new SlidingMenu(this);
+        menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setShadowWidthRes(R.dimen.shadow_left_menu_width);

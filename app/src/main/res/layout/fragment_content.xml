@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vp_tab"
+    <com.potato.zhbj.view.NoScrollViewPager
+        android:id="@+id/vp_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
     <RadioGroup
+        android:id="@+id/rg_tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_buttom_tab"

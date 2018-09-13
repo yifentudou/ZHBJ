@@ -3,6 +3,7 @@ package com.potato.zhbj.base.impl;
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.TextView;
 
 import com.potato.zhbj.base.BasePager;
@@ -24,5 +25,7 @@ public class ServicePager extends BasePager {
         tv.setTextSize(22);
         tv.setGravity(Gravity.CENTER);
         content.addView(tv);
+        tv_title.setText("生活");
+        btn_menu.setVisibility(View.VISIBLE);
     }
 }
