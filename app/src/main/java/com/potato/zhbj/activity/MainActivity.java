@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG_LEFT_MENU = "left_menu_fragment";
     public static final String TAG_CONTENT = "content_fragment";
     public SlidingMenu menu;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private void initFragment() {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        transaction.replace(R.id.leftMenu, getLeftFragment(),TAG_LEFT_MENU);
-        transaction.replace(R.id.content, getContentFragment(),TAG_CONTENT);
+        transaction.replace(R.id.leftMenu, LeftFragment(), TAG_LEFT_MENU);
+        transaction.replace(R.id.content, ContentFragment(), TAG_CONTENT);
         transaction.commit();
     }
 
@@ -49,11 +50,24 @@ public class MainActivity extends AppCompatActivity {
         menu.setMenu(R.layout.slidingmenu_frame_left_menu);
     }
 
-    private Fragment getLeftFragment() {
+    //获取leftfragment对象
+    public LeftMenuFragment getLeftFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        LeftMenuFragment fragment = (LeftMenuFragment) fm.findFragmentByTag(TAG_LEFT_MENU);
+        return fragment;
+    }
+    //获取ContentFragment对象
+    public ContentFragment getContentFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        ContentFragment fragment = (ContentFragment) fm.findFragmentByTag(TAG_CONTENT);
+        return fragment;
+    }
+
+    private Fragment LeftFragment() {
         return new LeftMenuFragment();
     }
 
-    private Fragment getContentFragment() {
+    private Fragment ContentFragment() {
         return new ContentFragment();
     }
 }

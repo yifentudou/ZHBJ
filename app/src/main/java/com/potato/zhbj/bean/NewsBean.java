@@ -19,7 +19,7 @@ public class NewsBean {
                 '}';
     }
 
-    private class NewsBeanData {
+    public class NewsBeanData {
         public int id;
         public String title;
         public int type;
