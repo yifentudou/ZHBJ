@@ -41,6 +41,7 @@ import static android.widget.Toast.LENGTH_LONG;
  */
 public class NewsPager extends BasePager {
     private ArrayList<BaseMenuDetailPager> menuList;//菜单详情页集合
+    private NewsBean newsBean;
 
     public NewsPager(Activity mActivity) {
         super(mActivity);
@@ -48,12 +49,12 @@ public class NewsPager extends BasePager {
 
     @Override
     public void initData() {
-        TextView tv = new TextView(mActivity);
-        tv.setText("新闻中心");
-        tv.setTextColor(Color.RED);
-        tv.setTextSize(22);
-        tv.setGravity(Gravity.CENTER);
-        content.addView(tv);
+//        TextView tv = new TextView(mActivity);
+//        tv.setText("新闻中心");
+//        tv.setTextColor(Color.RED);
+//        tv.setTextSize(22);
+//        tv.setGravity(Gravity.CENTER);
+//        content.addView(tv);
         tv_title.setText("新闻");
         btn_menu.setVisibility(View.VISIBLE);
         //先判断又没有缓存，如果有，则获取缓存
@@ -65,6 +66,7 @@ public class NewsPager extends BasePager {
             //请求服务器，获取数据
             getDataFromServer();
         }
+        setCurrentMenuDetailPager(0);
     }
 
     private void getDataFromServer() {
@@ -108,18 +110,18 @@ public class NewsPager extends BasePager {
 
     private void getGsonData(String result) {
         Gson gson = new Gson();
-        NewsBean newsBean = gson.fromJson(result, NewsBean.class);
+        newsBean = gson.fromJson(result, NewsBean.class);
         //拿到mainActivity
         MainActivity mainActivity = (MainActivity) mActivity;
         //拿到leftFragment
         LeftMenuFragment leftFragment = mainActivity.getLeftFragment();
         leftFragment.setMenuData(newsBean.data);
-//初始化菜单详情页
+        //初始化菜单详情页
         menuList = new ArrayList<>();
-        menuList.add(new InteractMenuDetailPager(mActivity));
-        menuList.add(new NewsMenuDetailPager(mActivity));
-        menuList.add(new PhotoMenuDetailPager(mActivity));
+        menuList.add(new NewsMenuDetailPager(mActivity, newsBean.data.get(0).children));
         menuList.add(new TopicMenuDetailPager(mActivity));
+        menuList.add(new PhotoMenuDetailPager(mActivity));
+        menuList.add(new InteractMenuDetailPager(mActivity));
 
     }
 
@@ -127,9 +129,10 @@ public class NewsPager extends BasePager {
     public void setCurrentMenuDetailPager(int position) {
         //重新给framelayout添加内容
         BaseMenuDetailPager baseMenuDetailPager = menuList.get(position);
-        View  view = baseMenuDetailPager.mRootView;//当前布局的页面
+        View view = baseMenuDetailPager.mRootView;//当前布局的页面
         content.removeAllViews();//清除view
         content.addView(view);//给帧布局添加布局
         baseMenuDetailPager.initData();//初始化数据
+        tv_title.setText(newsBean.data.get(position).title);//更新标题
     }
 }

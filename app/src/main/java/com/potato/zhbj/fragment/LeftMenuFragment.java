@@ -13,6 +13,7 @@ import com.potato.zhbj.R;
 import com.potato.zhbj.activity.MainActivity;
 import com.potato.zhbj.base.impl.NewsPager;
 import com.potato.zhbj.bean.NewsBean;
+import com.viewpagerindicator.TabPageIndicator;
 
 import org.w3c.dom.Text;
 import org.xutils.view.annotation.ViewInject;
@@ -43,6 +44,8 @@ public class LeftMenuFragment extends BaseFragment {
 
     //给侧边栏数据
     public void setMenuData(ArrayList<NewsBean.NewsBeanData> data) {
+        mCurrentItem = 0;//当前选中的位置归0
+
         //更新页面
         mNewsBeanData = data;
         final leftMenuAdapter mAdapter = new leftMenuAdapter();

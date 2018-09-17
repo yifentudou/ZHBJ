@@ -33,7 +33,7 @@ public class BasePager {
         btn_menu = view.findViewById(R.id.btn_menu);
         content = view.findViewById(R.id.content);
         btn_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
+             @Override
             public void onClick(View v) {
                 toggle();
             }

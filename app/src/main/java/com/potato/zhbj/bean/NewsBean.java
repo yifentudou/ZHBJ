@@ -36,7 +36,7 @@ public class NewsBean {
         }
     }
 
-    private class TabData {
+    public class TabData {
         public int id;
         public String title;
         public int type;
