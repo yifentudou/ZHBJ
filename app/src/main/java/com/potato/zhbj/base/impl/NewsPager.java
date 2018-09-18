@@ -1,16 +1,15 @@
 package com.potato.zhbj.base.impl;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 import com.potato.zhbj.Constants;
 import com.potato.zhbj.activity.MainActivity;
 import com.potato.zhbj.base.BaseMenuDetailPager;
@@ -23,17 +22,7 @@ import com.potato.zhbj.bean.NewsBean;
 import com.potato.zhbj.fragment.LeftMenuFragment;
 import com.potato.zhbj.utils.CacheUtil;
 
-import org.xutils.ex.HttpException;
-import org.xutils.http.RequestParams;
-import org.xutils.x;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
-
-import javax.security.auth.callback.Callback;
-
-import static android.widget.Toast.LENGTH_LONG;
 
 /**
  * Created by li.zhirong on 2018/9/12/012 17:57
@@ -71,41 +60,23 @@ public class NewsPager extends BasePager {
 
     private void getDataFromServer() {
         //xUtils3请求网络
-        RequestParams params = new RequestParams(Constants.CATEGORY_URL);
-        x.http().get(params, new org.xutils.common.Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                Log.e("tag", result);
-                getGsonData(result);
-                //写缓存
-                CacheUtil.setCache(Constants.CATEGORY_URL, result, mActivity);
-            }
+        OkGo.<String>get(Constants.CATEGORY_URL)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("tag", response.body());
+                        getGsonData(response.body());
+                        //写缓存
+                        CacheUtil.setCache(Constants.CATEGORY_URL, response.body(), mActivity);
+                    }
 
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                Log.e("tag", ex.getMessage());
-                Toast.makeText(mActivity, ex.getMessage(), Toast.LENGTH_LONG).show();
-                if (ex instanceof HttpException) { // 网络错误
-                    HttpException httpEx = (HttpException) ex;
-                    int responseCode = httpEx.getCode();
-                    String responseMsg = httpEx.getMessage();
-                    String errorResult = httpEx.getResult();
-                    // ...
-                } else { // 其他错误
-                    // ...
-                }
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        Log.e("tag", response.message());
+                        Toast.makeText(mActivity, response.message(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void getGsonData(String result) {

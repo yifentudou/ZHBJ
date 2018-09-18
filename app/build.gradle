@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -27,7 +31,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':SlidingMenu')
-    implementation 'org.xutils:xutils:3.5.0'
     implementation 'com.google.code.gson:gson:2.8.0'
     implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
+//必须使用
+    implementation 'com.lzy.net:okgo:3.0.4'
 }

@@ -1,6 +1,5 @@
 package com.potato.zhbj.fragment;
 
-import android.support.v7.widget.ViewUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,10 +12,6 @@ import com.potato.zhbj.R;
 import com.potato.zhbj.activity.MainActivity;
 import com.potato.zhbj.base.impl.NewsPager;
 import com.potato.zhbj.bean.NewsBean;
-import com.viewpagerindicator.TabPageIndicator;
-
-import org.w3c.dom.Text;
-import org.xutils.view.annotation.ViewInject;
 
 import java.util.ArrayList;
 

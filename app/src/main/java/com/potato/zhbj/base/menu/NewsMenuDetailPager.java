@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -38,6 +39,7 @@ public class NewsMenuDetailPager extends BaseMenuDetailPager implements ViewPage
     private ArrayList<TabDetailPager> mTabPagers;//页签页面集合
     ViewPager vp_detail;
     TabPageIndicator tabIndicator;
+    private ImageButton btn_next;
 
     public NewsMenuDetailPager(Activity mActivity, ArrayList<NewsBean.TabData> children) {
         super(mActivity);
@@ -53,6 +55,7 @@ public class NewsMenuDetailPager extends BaseMenuDetailPager implements ViewPage
         View view = View.inflate(mActivity, R.layout.layout_news_detail, null);
         vp_detail = view.findViewById(R.id.vp_detail);
         tabIndicator = (TabPageIndicator) view.findViewById(R.id.tabIndicator);
+        btn_next = view.findViewById(R.id.btn_next);
         return view;
     }
 
@@ -135,5 +138,13 @@ public class NewsMenuDetailPager extends BaseMenuDetailPager implements ViewPage
         vp_detail.setAdapter(new NewsMenuDetailPagerAdapter());
         tabIndicator.setViewPager(vp_detail);//绑定viewpager和tab,必须在viewpager有数据之后绑定
         tabIndicator.setOnPageChangeListener(this);
+        btn_next.setOnClickListener(v -> addNextPager());
+    }
+
+    //加载下一页
+     public void addNextPager() {
+        int currentItem = vp_detail.getCurrentItem();
+        currentItem++;
+        vp_detail.setCurrentItem(currentItem);
     }
 }
