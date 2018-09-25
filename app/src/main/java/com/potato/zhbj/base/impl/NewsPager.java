@@ -54,13 +54,14 @@ public class NewsPager extends BasePager {
         } else {
             //请求服务器，获取数据
             getDataFromServer();
+
         }
-        setCurrentMenuDetailPager(0);
     }
 
     private void getDataFromServer() {
-        //xUtils3请求网络
+        //OkGo请求网络
         OkGo.<String>get(Constants.CATEGORY_URL)
+                .tag(this)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
@@ -93,7 +94,7 @@ public class NewsPager extends BasePager {
         menuList.add(new TopicMenuDetailPager(mActivity));
         menuList.add(new PhotoMenuDetailPager(mActivity));
         menuList.add(new InteractMenuDetailPager(mActivity));
-
+        setCurrentMenuDetailPager(0);
     }
 
     //设置新闻中心的菜单详情页
