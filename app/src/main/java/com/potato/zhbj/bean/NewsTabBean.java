@@ -17,7 +17,7 @@ public class NewsTabBean {
         public String more;
     }
 
-    private class TabNewsBean {
+    public class TabNewsBean {
 
         /**
          * id : 35311

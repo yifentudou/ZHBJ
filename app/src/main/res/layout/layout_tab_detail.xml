@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="#61000000"
+            android:background="#93000000"
             android:padding="5dp">
 
             <TextView
@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="标题"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="@dimen/txt_topic_title" />
 
             <com.viewpagerindicator.CirclePageIndicator
@@ -42,5 +42,9 @@
                 app:strokeWidth="0dp" />
         </RelativeLayout>
     </FrameLayout>
-
+<ListView
+    android:id="@+id/listview"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"/>
 </LinearLayout>

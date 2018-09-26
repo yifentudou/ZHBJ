@@ -3,5 +3,7 @@
     <dimen name="shadow_left_menu_width">150dp</dimen>
     <dimen name="slidingmenu_offset">250dp</dimen>
     <dimen name="txt_title">22sp</dimen>
+    <dimen name="txt_item_title">16sp</dimen>
     <dimen name="txt_topic_title">16sp</dimen>
+    <dimen name="txt_data">12sp</dimen>
 </resources>

@@ -8,7 +8,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -37,6 +39,8 @@ public class TabDetailPager extends BaseMenuDetailPager {
     private TopNewsViewPager viewPager;
     private TextView tv_topic_title;
     CirclePageIndicator tabIndicator;
+    private ListView listview;
+    private ArrayList<NewsTabBean.TabNewsBean> newsList;
 
     public TabDetailPager(Activity mActivity) {
         super(mActivity);
@@ -60,6 +64,8 @@ public class TabDetailPager extends BaseMenuDetailPager {
         viewPager = (TopNewsViewPager) view.findViewById(R.id.viewPager);
         tv_topic_title = view.findViewById(R.id.tv_topic_title);
         tabIndicator = view.findViewById(R.id.tabIndicator);
+        listview = view.findViewById(R.id.listview);
+
         return view;
 
     }
@@ -123,8 +129,58 @@ public class TabDetailPager extends BaseMenuDetailPager {
             tv_topic_title.setText(newsTop.get(0).title);//默认为0位置数据
             tabIndicator.onPageSelected(0);//默认让第一个选中，解决页面销毁时重新初始化时，Indicator仍然保持之前的状态的bug
         }
+        newsList = newsTabBean.data.news;
+        if (newsList != null) {
+            NewsListAdapter listAdapter = new NewsListAdapter();
+            listview.setAdapter(listAdapter);
+        }
     }
 
+    class NewsListAdapter extends BaseAdapter {
+
+
+
+        @Override
+        public int getCount() {
+            return newsList.size();
+        }
+
+        @Override
+        public NewsTabBean.TabNewsBean getItem(int position) {
+            return newsList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+             ViewHolder viewHolder;
+            if (convertView != null) {
+                convertView = View.inflate(mActivity, R.layout.layout_left_image, null);
+                viewHolder = new ViewHolder();
+                viewHolder.iv_img = convertView.findViewById(R.id.iv_img);
+                viewHolder.tv_title = convertView.findViewById(R.id.tv_title);
+                viewHolder.tv_data = convertView.findViewById(R.id.tv_data);
+                convertView.setTag(viewHolder);
+            }else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            NewsTabBean.TabNewsBean news = getItem(position);
+            viewHolder.tv_title.setText(news.title);
+            viewHolder.tv_data.setText(news.pubdate);
+            Glide.with(mActivity).load(news.url).error(R.drawable.ic_pic_default).into(viewHolder.iv_img);
+            return convertView;
+        }
+    }
+
+    static class ViewHolder {
+        public ImageView iv_img;
+        public TextView tv_title;
+        public TextView tv_data;
+    }
 
     class TopNewsAdapter extends PagerAdapter {
 
