@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,15 +17,17 @@ import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
-import com.potato.zhbj.Constants;
 import com.potato.zhbj.R;
 import com.potato.zhbj.bean.NewsBean;
 import com.potato.zhbj.bean.NewsTabBean;
 import com.potato.zhbj.utils.CacheUtil;
+import com.potato.zhbj.view.PullToRefreshListView;
 import com.potato.zhbj.view.TopNewsViewPager;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.ArrayList;
+
+import static com.potato.zhbj.Constants.SERVER_URL;
 
 /**
  * Created by li.zhirong on 2018/9/17/017 11:49
@@ -39,7 +40,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
     private TopNewsViewPager viewPager;
     private TextView tv_topic_title;
     CirclePageIndicator tabIndicator;
-    private ListView listview;
+    private PullToRefreshListView listview;
     private ArrayList<NewsTabBean.TabNewsBean> newsList;
 
     public TabDetailPager(Activity mActivity) {
@@ -49,7 +50,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
     public TabDetailPager(Activity mActivity, NewsBean.TabData tabData) {
         super(mActivity);
         mTabData = tabData;
-        mUrll = Constants.SERVER_URL + mTabData.url;
+        mUrll = SERVER_URL + mTabData.url;
     }
 
     @Override
@@ -61,11 +62,17 @@ public class TabDetailPager extends BaseMenuDetailPager {
 //        tv.setGravity(Gravity.CENTER);
 //        return tv;
         View view = View.inflate(mActivity, R.layout.layout_tab_detail, null);
-        viewPager = (TopNewsViewPager) view.findViewById(R.id.viewPager);
-        tv_topic_title = view.findViewById(R.id.tv_topic_title);
-        tabIndicator = view.findViewById(R.id.tabIndicator);
-        listview = view.findViewById(R.id.listview);
+        listview = (PullToRefreshListView) view.findViewById(R.id.listview);
 
+        View itemListHeader = View.inflate(mActivity,R.layout.list_item_header,null);
+        viewPager = (TopNewsViewPager) itemListHeader.findViewById(R.id.viewPager);
+        tv_topic_title = itemListHeader.findViewById(R.id.tv_topic_title);
+        tabIndicator = itemListHeader.findViewById(R.id.tabIndicator);
+        listview.addHeaderView(itemListHeader);
+        //5.前端界面设置回调
+        listview.setOnRefreshListener(() -> {
+              getDataFromServer();
+        });
         return view;
 
     }
@@ -90,6 +97,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
                 Log.e("tag", "获取tabDetailPager页面的URL成功");
                 getGsonData(response.body());
                 CacheUtil.setCache(mUrll, response.body(), mActivity);
+                listview.onRefreshComplete();//收起下拉刷新控件
             }
 
             @Override
@@ -97,6 +105,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
                 super.onError(response);
                 Log.e("tag", "获取tabDetailPager页面的URL失败");
                 Log.e("tag", response.message());
+                listview.onRefreshComplete();//收起下拉刷新控件
             }
         });
     }
@@ -158,20 +167,22 @@ public class TabDetailPager extends BaseMenuDetailPager {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
              ViewHolder viewHolder;
-            if (convertView != null) {
+            if (convertView == null) {
                 convertView = View.inflate(mActivity, R.layout.layout_left_image, null);
                 viewHolder = new ViewHolder();
                 viewHolder.iv_img = convertView.findViewById(R.id.iv_img);
-                viewHolder.tv_title = convertView.findViewById(R.id.tv_title);
+                viewHolder.tv_title = convertView.findViewById(R.id.tv_text);
                 viewHolder.tv_data = convertView.findViewById(R.id.tv_data);
                 convertView.setTag(viewHolder);
             }else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             NewsTabBean.TabNewsBean news = getItem(position);
+            //模拟器用不起10.0.2.2,使用本机ip模拟
+            String urls =  news.listimage.replace("10.0.2.2","192.168.50.245");
             viewHolder.tv_title.setText(news.title);
             viewHolder.tv_data.setText(news.pubdate);
-            Glide.with(mActivity).load(news.url).error(R.drawable.ic_pic_default).into(viewHolder.iv_img);
+            Glide.with(mActivity).load(urls).error(R.drawable.ic_pic_default).into(viewHolder.iv_img);
             return convertView;
         }
     }
@@ -200,7 +211,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
             ImageView imageView = new ImageView(mActivity);
 //            imageView.setImageResource(R.drawable.ic_pic_default);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);//设置图片缩放方式，
-            String imageUrl = newsTop.get(position).topimage;
+            String imageUrl = newsTop.get(position).topimage.replace("10.0.2.2","192.168.50.245");
             Glide.with(mActivity).load(imageUrl).error(R.drawable.ic_pic_default).into(imageView);
             container.addView(imageView);
             return imageView;

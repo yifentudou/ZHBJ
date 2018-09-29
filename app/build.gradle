@@ -32,7 +32,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':SlidingMenu')
     implementation 'com.google.code.gson:gson:2.8.0'
-    implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
+   // implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     //必须使用
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.google.code.gson:gson:2.6.2'
