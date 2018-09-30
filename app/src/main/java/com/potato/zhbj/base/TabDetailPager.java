@@ -6,11 +6,14 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -24,6 +27,8 @@ import com.potato.zhbj.utils.CacheUtil;
 import com.potato.zhbj.view.PullToRefreshListView;
 import com.potato.zhbj.view.TopNewsViewPager;
 import com.viewpagerindicator.CirclePageIndicator;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -42,6 +47,8 @@ public class TabDetailPager extends BaseMenuDetailPager {
     CirclePageIndicator tabIndicator;
     private PullToRefreshListView listview;
     private ArrayList<NewsTabBean.TabNewsBean> newsList;
+    private String mMoreUrl;
+    private NewsListAdapter listAdapter;
 
     public TabDetailPager(Activity mActivity) {
         super(mActivity);
@@ -64,17 +71,55 @@ public class TabDetailPager extends BaseMenuDetailPager {
         View view = View.inflate(mActivity, R.layout.layout_tab_detail, null);
         listview = (PullToRefreshListView) view.findViewById(R.id.listview);
 
-        View itemListHeader = View.inflate(mActivity,R.layout.list_item_header,null);
+        View itemListHeader = View.inflate(mActivity, R.layout.list_item_header, null);
         viewPager = (TopNewsViewPager) itemListHeader.findViewById(R.id.viewPager);
         tv_topic_title = itemListHeader.findViewById(R.id.tv_topic_title);
         tabIndicator = itemListHeader.findViewById(R.id.tabIndicator);
         listview.addHeaderView(itemListHeader);
         //5.前端界面设置回调
-        listview.setOnRefreshListener(() -> {
-              getDataFromServer();
+        listview.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getDataFromServer();
+            }
+
+            @Override
+            public void onLoadMore() {
+                //判断是否有下一页数据
+                if (!TextUtils.isEmpty(mMoreUrl)) {
+                    //有下一页数据
+                    getMoreDataFromServer();
+                } else {
+                    Toast.makeText(mActivity, "没有更多数据了", Toast.LENGTH_LONG).show();
+                }
+            }
         });
+
         return view;
 
+    }
+
+    /**
+     * 获取下一页数据
+     */
+    private void getMoreDataFromServer() {
+        OkGo.<String>get(mMoreUrl).tag(this).execute(new StringCallback() {
+            @Override
+            public void onSuccess(Response<String> response) {
+                Log.e("tag", "获取下一页tabDetailPager页面的URL成功");
+                getGsonData(response.body(), true);
+//                CacheUtil.setCache(mUrll, response.body(), mActivity);
+                // listview.onRefreshComplete(true);//收起下拉刷新控件
+            }
+
+            @Override
+            public void onError(Response<String> response) {
+                Log.e("tag", "获取下一页tabDetailPager页面的URL失败");
+                //   Log.e("tag", response.message());
+                Toast.makeText(mActivity, "获取数据失败", Toast.LENGTH_LONG).show();
+                //   listview.onRefreshComplete(false);//收起下拉刷新控件
+            }
+        });
     }
 
     @Override
@@ -82,7 +127,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
 //        tv.setText(mTabData.title);
         String isCache = CacheUtil.getCache(mUrll, mActivity);
         if (!TextUtils.isEmpty(isCache)) {
-            getGsonData(isCache);
+            getGsonData(isCache, false);
         } else {
             getDataFromServer();
         }
@@ -95,58 +140,71 @@ public class TabDetailPager extends BaseMenuDetailPager {
             @Override
             public void onSuccess(Response<String> response) {
                 Log.e("tag", "获取tabDetailPager页面的URL成功");
-                getGsonData(response.body());
+                getGsonData(response.body(), false);
                 CacheUtil.setCache(mUrll, response.body(), mActivity);
-                listview.onRefreshComplete();//收起下拉刷新控件
+                listview.onRefreshComplete(true);//收起下拉刷新控件
             }
 
             @Override
             public void onError(Response<String> response) {
-                super.onError(response);
                 Log.e("tag", "获取tabDetailPager页面的URL失败");
-                Log.e("tag", response.message());
-                listview.onRefreshComplete();//收起下拉刷新控件
+                //   Log.e("tag", response.message());
+                Toast.makeText(mActivity, "获取数据失败", Toast.LENGTH_LONG).show();
+                listview.onRefreshComplete(false);//收起下拉刷新控件
             }
         });
     }
 
-    private void getGsonData(String body) {
+    private void getGsonData(String body, boolean isMore) {
         Gson gson = new Gson();
         NewsTabBean newsTabBean = gson.fromJson(body, NewsTabBean.class);
         newsTop = newsTabBean.data.topnews;
-        if (newsTop != null) {
-            viewPager.setAdapter(new TopNewsAdapter());
-            tabIndicator.setViewPager(viewPager);
-            tabIndicator.setSnap(true);//快照方式
-            tabIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    //更新新闻标题
-                    tv_topic_title.setText(newsTop.get(position).title);
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
-            tv_topic_title.setText(newsTop.get(0).title);//默认为0位置数据
-            tabIndicator.onPageSelected(0);//默认让第一个选中，解决页面销毁时重新初始化时，Indicator仍然保持之前的状态的bug
+        String moreUrll = newsTabBean.data.more;
+        if (!TextUtils.isEmpty(moreUrll)) {
+            mMoreUrl = SERVER_URL + moreUrll;
+        } else {
+            mMoreUrl = null;
         }
-        newsList = newsTabBean.data.news;
-        if (newsList != null) {
-            NewsListAdapter listAdapter = new NewsListAdapter();
-            listview.setAdapter(listAdapter);
+        if (!isMore) {
+            if (newsTop != null) {
+                viewPager.setAdapter(new TopNewsAdapter());
+                tabIndicator.setViewPager(viewPager);
+                tabIndicator.setSnap(true);//快照方式
+                tabIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        //更新新闻标题
+                        tv_topic_title.setText(newsTop.get(position).title);
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+
+                    }
+                });
+                tv_topic_title.setText(newsTop.get(0).title);//默认为0位置数据
+                tabIndicator.onPageSelected(0);//默认让第一个选中，解决页面销毁时重新初始化时，Indicator仍然保持之前的状态的bug
+            }
+            //新闻列表
+            newsList = newsTabBean.data.news;
+            if (newsList != null) {
+                listAdapter = new NewsListAdapter();
+                listview.setAdapter(listAdapter);
+            }
+        } else {
+            ArrayList<NewsTabBean.TabNewsBean> moreNews = newsTabBean.data.news;
+            newsList.addAll(moreNews);
+            listAdapter.notifyDataSetChanged();
         }
+
     }
 
     class NewsListAdapter extends BaseAdapter {
-
 
 
         @Override
@@ -166,7 +224,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-             ViewHolder viewHolder;
+            ViewHolder viewHolder;
             if (convertView == null) {
                 convertView = View.inflate(mActivity, R.layout.layout_left_image, null);
                 viewHolder = new ViewHolder();
@@ -174,12 +232,12 @@ public class TabDetailPager extends BaseMenuDetailPager {
                 viewHolder.tv_title = convertView.findViewById(R.id.tv_text);
                 viewHolder.tv_data = convertView.findViewById(R.id.tv_data);
                 convertView.setTag(viewHolder);
-            }else {
+            } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             NewsTabBean.TabNewsBean news = getItem(position);
             //模拟器用不起10.0.2.2,使用本机ip模拟
-            String urls =  news.listimage.replace("10.0.2.2","192.168.50.245");
+            String urls = news.listimage.replace("10.0.2.2", "192.168.50.245");
             viewHolder.tv_title.setText(news.title);
             viewHolder.tv_data.setText(news.pubdate);
             Glide.with(mActivity).load(urls).error(R.drawable.ic_pic_default).into(viewHolder.iv_img);
@@ -211,7 +269,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
             ImageView imageView = new ImageView(mActivity);
 //            imageView.setImageResource(R.drawable.ic_pic_default);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);//设置图片缩放方式，
-            String imageUrl = newsTop.get(position).topimage.replace("10.0.2.2","192.168.50.245");
+            String imageUrl = newsTop.get(position).topimage.replace("10.0.2.2", "192.168.50.245");
             Glide.with(mActivity).load(imageUrl).error(R.drawable.ic_pic_default).into(imageView);
             container.addView(imageView);
             return imageView;
