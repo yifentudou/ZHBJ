@@ -197,7 +197,8 @@ private boolean isLoadMore;
             if (lastVisiableView == getCount() - 1 && !isLoadMore) {//当前没有加载并且是最后一页
                 Log.e("tag", "到底了");
                 footerView.setPadding(0, 0, 0, 0);
-//                setSelection(getCount() - 1);//将最后一个listview显示再最后一个item上，
+                isLoadMore = true;
+                setSelection(getCount() - 1);//将最后一个listview显示再最后一个item上，
                                             // 当显示到最后一个item时，显示加载更多，无需滑动
             //通知主界面加载下一页数据
                 if(mListener != null){

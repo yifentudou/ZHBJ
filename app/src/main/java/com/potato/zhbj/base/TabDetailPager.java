@@ -1,6 +1,7 @@
 package com.potato.zhbj.base;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -24,6 +26,7 @@ import com.potato.zhbj.R;
 import com.potato.zhbj.bean.NewsBean;
 import com.potato.zhbj.bean.NewsTabBean;
 import com.potato.zhbj.utils.CacheUtil;
+import com.potato.zhbj.utils.PrefUtil;
 import com.potato.zhbj.view.PullToRefreshListView;
 import com.potato.zhbj.view.TopNewsViewPager;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -90,11 +93,28 @@ public class TabDetailPager extends BaseMenuDetailPager {
                     //有下一页数据
                     getMoreDataFromServer();
                 } else {
+                    //没有更多数据时，隐藏控件
+                    listview.onRefreshComplete(false);
                     Toast.makeText(mActivity, "没有更多数据了", Toast.LENGTH_LONG).show();
                 }
             }
         });
-
+        listview.setOnItemClickListener((parent, view1, position, id) -> {
+                    int headNum = listview.getHeaderViewsCount();//去掉头布局数量
+                    Log.e("tag", "第" + (position - headNum) + "item被点击了");
+                    NewsTabBean.TabNewsBean newItem = newsList.get(position);
+                    //纪录阅读id
+                    String read_id = PrefUtil.getString(mActivity, "read_id", "");
+                    if (!read_id.contains(newItem.id + "")) {
+                        read_id = read_id + newItem.id + ",";
+                        PrefUtil.setString(mActivity, "read_id", read_id);
+                    }
+                    //要将被点击得item文字颜色改为灰色，view对象就是当前被点击得布局
+                    TextView tv_text = view1.findViewById(R.id.tv_text);//性能高
+                    tv_text.setTextColor(Color.GRAY);
+//                    listAdapter.notifyDataSetChanged();//性能低
+                }
+        );
         return view;
 
     }
@@ -109,7 +129,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
                 Log.e("tag", "获取下一页tabDetailPager页面的URL成功");
                 getGsonData(response.body(), true);
 //                CacheUtil.setCache(mUrll, response.body(), mActivity);
-                // listview.onRefreshComplete(true);//收起下拉刷新控件
+                listview.onRefreshComplete(true);//收起下拉刷新控件
             }
 
             @Override
@@ -117,7 +137,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
                 Log.e("tag", "获取下一页tabDetailPager页面的URL失败");
                 //   Log.e("tag", response.message());
                 Toast.makeText(mActivity, "获取数据失败", Toast.LENGTH_LONG).show();
-                //   listview.onRefreshComplete(false);//收起下拉刷新控件
+                listview.onRefreshComplete(false);//收起下拉刷新控件
             }
         });
     }
@@ -240,6 +260,14 @@ public class TabDetailPager extends BaseMenuDetailPager {
             String urls = news.listimage.replace("10.0.2.2", "192.168.50.245");
             viewHolder.tv_title.setText(news.title);
             viewHolder.tv_data.setText(news.pubdate);
+            String read_id = PrefUtil.getString(mActivity, "read_id", "");
+            //历史纪录
+            if(read_id.contains(news.id + "")){
+                viewHolder.tv_title.setTextColor(Color.GRAY);
+            }else{
+                viewHolder.tv_title.setTextColor(Color.BLACK);
+            }
+
             Glide.with(mActivity).load(urls).error(R.drawable.ic_pic_default).into(viewHolder.iv_img);
             return convertView;
         }
