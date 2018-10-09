@@ -26,6 +26,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:theme="@style/Theme.PageIndicatorDefaults" />
+        <activity android:name=".activity.WebActivity" />
     </application>
 
 </manifest>

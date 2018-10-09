@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="新闻"
         android:textColor="@android:color/white"
         android:textSize="@dimen/txt_title" />
 
@@ -23,4 +22,42 @@
         android:layout_marginLeft="10dp"
         android:background="@null"
         android:src="@drawable/ic_menu" />
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:background="@null"
+        android:src="@drawable/ic_back"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ll_share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:visibility="gone">
+
+
+        <ImageButton
+            android:id="@+id/btn_textsize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_textsize" />
+
+        <ImageButton
+            android:id="@+id/btn_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_share" />
+    </LinearLayout>
+
 </RelativeLayout>

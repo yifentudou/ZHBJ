@@ -1,6 +1,7 @@
 package com.potato.zhbj.base;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
@@ -23,6 +24,7 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.potato.zhbj.R;
+import com.potato.zhbj.activity.WebActivity;
 import com.potato.zhbj.bean.NewsBean;
 import com.potato.zhbj.bean.NewsTabBean;
 import com.potato.zhbj.utils.CacheUtil;
@@ -113,6 +115,11 @@ public class TabDetailPager extends BaseMenuDetailPager {
                     TextView tv_text = view1.findViewById(R.id.tv_text);//性能高
                     tv_text.setTextColor(Color.GRAY);
 //                    listAdapter.notifyDataSetChanged();//性能低
+
+                    //调到新闻详情页面
+                    Intent intent = new Intent(mActivity, WebActivity.class);
+                    intent.putExtra("url",newItem.url);
+                    mActivity.startActivity(intent);
                 }
         );
         return view;
@@ -262,9 +269,9 @@ public class TabDetailPager extends BaseMenuDetailPager {
             viewHolder.tv_data.setText(news.pubdate);
             String read_id = PrefUtil.getString(mActivity, "read_id", "");
             //历史纪录
-            if(read_id.contains(news.id + "")){
+            if (read_id.contains(news.id + "")) {
                 viewHolder.tv_title.setTextColor(Color.GRAY);
-            }else{
+            } else {
                 viewHolder.tv_title.setTextColor(Color.BLACK);
             }
 
