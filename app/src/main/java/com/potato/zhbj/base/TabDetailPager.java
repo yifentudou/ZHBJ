@@ -3,11 +3,14 @@ package com.potato.zhbj.base;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +38,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 
 import org.w3c.dom.Text;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 
 import static com.potato.zhbj.Constants.SERVER_URL;
@@ -54,6 +58,7 @@ public class TabDetailPager extends BaseMenuDetailPager {
     private ArrayList<NewsTabBean.TabNewsBean> newsList;
     private String mMoreUrl;
     private NewsListAdapter listAdapter;
+    private Handler mHandler;
 
     public TabDetailPager(Activity mActivity) {
         super(mActivity);
@@ -224,6 +229,48 @@ public class TabDetailPager extends BaseMenuDetailPager {
             if (newsList != null) {
                 listAdapter = new NewsListAdapter();
                 listview.setAdapter(listAdapter);
+            }
+
+            if (mHandler == null) {
+                mHandler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        int item = viewPager.getCurrentItem();
+                        item++;
+                        if (item > newsTop.size() - 1) {
+                            item = 0;
+                        }
+                        viewPager.setCurrentItem(item);
+                        mHandler.sendEmptyMessageDelayed(0, 3000);//发送3秒延迟，形成内循环
+                    }
+                };
+                //保证自动轮播逻辑只启动一次
+                mHandler.sendEmptyMessageDelayed(0, 3000);
+                viewPager.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                Log.e("tag", "ACTION_DOWN: " );
+                                mHandler.removeCallbacksAndMessages(null);//触摸停止轮播，删除mHandler得所有消息
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                Log.e("tag", "ACTION_POINTER_UP: " );
+                                mHandler.sendEmptyMessageDelayed(0, 3000);
+                                break;
+                            case MotionEvent.ACTION_CANCEL:
+                                Log.e("tag", "ACTION_CANCEL: " );
+                                //当按下viewpager后，直接滑动listview,抬起导致事件无法响应，但会走此事件
+                                mHandler.sendEmptyMessageDelayed(0, 3000);
+                                break;
+                            default:
+                                Log.e("tag", "default: " );
+                                mHandler.sendEmptyMessageDelayed(0, 3000);
+                                break;
+                        }
+                        return false;
+                    }
+                });
             }
         } else {
             ArrayList<NewsTabBean.TabNewsBean> moreNews = newsTabBean.data.news;
