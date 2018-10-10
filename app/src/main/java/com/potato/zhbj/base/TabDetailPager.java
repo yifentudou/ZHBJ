@@ -118,7 +118,9 @@ public class TabDetailPager extends BaseMenuDetailPager {
 
                     //调到新闻详情页面
                     Intent intent = new Intent(mActivity, WebActivity.class);
-                    intent.putExtra("url",newItem.url);
+                    //模拟器用不起10.0.2.2,使用本机ip模拟
+                    String urls = newItem.url.replace("10.0.2.2", "192.168.50.245");
+                    intent.putExtra("url", urls);
                     mActivity.startActivity(intent);
                 }
         );
