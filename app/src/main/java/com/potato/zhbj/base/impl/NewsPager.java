@@ -92,7 +92,7 @@ public class NewsPager extends BasePager {
         menuList = new ArrayList<>();
         menuList.add(new NewsMenuDetailPager(mActivity, newsBean.data.get(0).children));
         menuList.add(new TopicMenuDetailPager(mActivity));
-        menuList.add(new PhotoMenuDetailPager(mActivity));
+        menuList.add(new PhotoMenuDetailPager(mActivity,btn_photos));
         menuList.add(new InteractMenuDetailPager(mActivity));
         setCurrentMenuDetailPager(0);
     }
@@ -106,5 +106,13 @@ public class NewsPager extends BasePager {
         content.addView(view);//给帧布局添加布局
         baseMenuDetailPager.initData();//初始化数据
         tv_title.setText(newsBean.data.get(position).title);//更新标题
+
+        //如果是组图页面，就显示组图按钮
+        if (baseMenuDetailPager instanceof PhotoMenuDetailPager) {
+            btn_photos.setVisibility(View.VISIBLE);
+        } else {
+            //隐藏切换按钮
+            btn_photos.setVisibility(View.GONE);
+        }
     }
 }
