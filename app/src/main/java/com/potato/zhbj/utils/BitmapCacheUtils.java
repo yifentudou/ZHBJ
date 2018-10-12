@@ -13,10 +13,12 @@ import java.util.IdentityHashMap;
  * 自定义三级缓存图片加载工具
  */
 public class BitmapCacheUtils {
+    private MemoryCacheUtils memoryCacheUtils;
     private NetCacheUtils mNetCacheUtils;
     private LocalCacheUtils localCacheUtils;
 
     public BitmapCacheUtils() {
+        memoryCacheUtils = new MemoryCacheUtils();
         localCacheUtils = new LocalCacheUtils();
         mNetCacheUtils = new NetCacheUtils(localCacheUtils);
     }
@@ -30,6 +32,8 @@ public class BitmapCacheUtils {
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
             Log.e("tag", "从本地加载图片辣: " );
+            //写内存缓存
+            memoryCacheUtils.setMemoryCache(url,bitmap);
             return;
         }
         //3.最后从网络获取图片，速度慢
