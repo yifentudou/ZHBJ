@@ -23,6 +23,7 @@ import com.potato.zhbj.Constants;
 import com.potato.zhbj.R;
 import com.potato.zhbj.base.BaseMenuDetailPager;
 import com.potato.zhbj.bean.PhotosBean;
+import com.potato.zhbj.utils.BitmapCacheUtils;
 import com.potato.zhbj.utils.CacheUtil;
 import com.potato.zhbj.utils.PrefUtil;
 
@@ -117,6 +118,11 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager implements View.On
     }
 
     class PhotoAdapter extends BaseAdapter {
+        BitmapCacheUtils bitmapCacheUtils;
+
+        public PhotoAdapter() {
+            bitmapCacheUtils = new BitmapCacheUtils();
+        }
 
         @Override
         public int getCount() {
@@ -148,7 +154,9 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager implements View.On
             PhotosBean.DataBean.NewsBean item = getItem(position);
             viewHolder.tv_title.setText(item.getTitle());
             String urls = item.getListimage().replace("10.0.2.2", "192.168.50.245");
-            Glide.with(mActivity).load(urls).placeholder(R.drawable.ic_pic_default).into(viewHolder.iv_image);
+            //自定义三级缓存图片加载
+            bitmapCacheUtils.display(viewHolder.iv_image, urls);
+//            Glide.with(mActivity).load(urls).placeholder(R.drawable.ic_pic_default).into(viewHolder.iv_image);
             return convertView;
         }
     }
