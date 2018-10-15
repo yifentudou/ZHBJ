@@ -15,13 +15,15 @@ import java.net.URL;
  * Created by li.zhirong on 2018/10/12/012 14:17
  */
 public class NetCacheUtils {
+    private final MemoryCacheUtils memoryCacheUtils;
     private HttpURLConnection connection;
     private ImageView imageViews;
     private String imageUrl;
     private LocalCacheUtils localCacheUtils;
 
-    public NetCacheUtils(LocalCacheUtils localCacheUtils) {
+    public NetCacheUtils(LocalCacheUtils localCacheUtils, MemoryCacheUtils memoryCacheUtils) {
         this.localCacheUtils = localCacheUtils;
+        this.memoryCacheUtils = memoryCacheUtils;
     }
 
     public void getBitmapFromNet(ImageView imageView, String url) {
@@ -68,6 +70,7 @@ public class NetCacheUtils {
                     imageViews.setImageBitmap(bitmap);
                     //写本地缓存
                     localCacheUtils.setLocalCache(url,bitmap);
+                    memoryCacheUtils.setMemoryCache(url,bitmap);
                 }
 
             }
