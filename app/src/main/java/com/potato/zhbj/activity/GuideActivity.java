@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import com.potato.zhbj.R;
 import com.potato.zhbj.utils.PrefUtil;
+import com.potato.zhbj.view.DensityUtils;
 
 import java.util.ArrayList;
 
@@ -116,7 +117,7 @@ public class GuideActivity extends AppCompatActivity {
             //初始化布局参数，布局包裹内容，父控件是谁，就是谁声明的布局参数
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             if (i > 0) {
-                lp.leftMargin = 10; //从第二个点开始设置左边距
+                lp.leftMargin = DensityUtils.dip2px(10,this); //从第二个点开始设置左边距
             }
             point.setLayoutParams(lp);//设置布局参数
             ll_container.addView(point);
