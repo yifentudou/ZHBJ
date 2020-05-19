@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // configure the SlidingMenu
         Log.e("lee","this is a new branch1");
-        Log.e("lee","this is a new branch2");
 
 
         initSlidingMenu();
